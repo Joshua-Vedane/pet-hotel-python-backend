@@ -20,7 +20,7 @@ def tests():
 
 @app.route('/owners', methods=['GET'])
 def get_owners():
-    cursor = connection.cursor()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
     query_text = "SELECT owners.id, owners.name, COUNT(pets.name) FROM owners JOIN pets on owners.id = pets.user_id GROUP BY owners.id"
     # execute query
     cursor.execute(query_text)
@@ -42,7 +42,7 @@ def add_owner():
         print(name)
         insertQuery = "INSERT INTO owners (name) VALUES (%s)"
         # if only only one param, still needs to be a tuple --> cursor.execute(insertQuery, (title,)) <-- comma matters!
-        cursor.execute(insertQuery, (name))
+        cursor.execute(insertQuery, (name,))
         # really for sure commit the query
         connection.commit()
         count = cursor.rowcount
