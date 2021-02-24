@@ -21,7 +21,11 @@ def tests():
 @app.route('/owners', methods=['GET'])
 def get_owners():
     cursor = connection.cursor()
-    query_text = "SELECT * FROM owners"
+    query_text = "
+                    SELECT "owners".id, "owners".name, COUNT("pets".name) FROM "owners"
+                    JOIN "pets" on "owners".id = "pets".user_id
+                    GROUP BY "owners".id;
+                    "
     # execute query
     cursor.execute(query_text)
     # Selecting rows from mobile table using cursor.fetchall
