@@ -11,7 +11,7 @@ app.config["DEBUG"] = True
 # Get all Pets
 @app.route('/dashboard', methods=['GET'])
 def get_pets():
-  connection = psycopg2.connect(user="joshuavedane",
+  connection = psycopg2.connect(user="travishuss",
                                 host="127.0.0.1",
                                 port="5432",
                                 database="python_pets")
@@ -34,7 +34,7 @@ def add_pet():
   breed = request.form['breed']
   color = request.form['color']
   try: 
-    connection = psycopg2.connect(user="joshuavedane",
+    connection = psycopg2.connect(user="travishuss",
                                 host="127.0.0.1",
                                 port="5432",
                                 database="python_pets")
@@ -75,7 +75,7 @@ def tests():
 @app.route('/owners', methods=['GET'])
 def get_owners():
     # makes connection to postgresDB
-    connection = psycopg2.connect(user="dave", host="127.0.0.1", port="5432", database="python_pets")
+    connection = psycopg2.connect(user="travishuss", host="127.0.0.1", port="5432", database="python_pets")
 
     cursor = connection.cursor(cursor_factory=RealDictCursor)
 
@@ -96,7 +96,7 @@ def add_owner():
     name = request.form['name']
     try:
         # makes connection to postgresDB
-        connection = psycopg2.connect(user="dave", host="127.0.0.1", port="5432", database="python_pets")
+        connection = psycopg2.connect(user="travishuss", host="127.0.0.1", port="5432", database="python_pets")
         # Avoid getting arrays of arrays!
         cursor = connection.cursor(cursor_factory=RealDictCursor)
 
@@ -126,6 +126,32 @@ def add_owner():
             connection.close()
             print("PostgreSQL connection is closed")
 
-
-
+@app.route('/owners/<int:id>', methods=['DELETE'])
+def delete_owner(id):
+    print('in delete owner')
+    print(id)
+    try:
+        connection = psycopg2.connect(user="travishuss", host="127.0.0.1", port="5432", database="python_pets")
+        cursor = connection.cursor(cursor_factory=RealDictCursor)
+        query_text = "DELETE FROM owners where id = %s"
+        cursor.execute(query_text, (id,))
+        connection.commit()
+        count = cursor.rowcount
+        print(count, "Owner deleted")
+        # respond nicely
+        result = {'status': 'deleted'}
+        return make_response(jsonify(result), 201)
+    except (Exception, psycopg2.Error) as error:
+        if(connection):
+            print("Failed to delete owner", error)
+            # respond with error
+            result = {'status': 'ERROR'}
+            return make_response(jsonify(result), 500)
+    finally:
+        # closing database connection.
+        if(connection):
+            # clean up our connections
+            cursor.close()
+            connection.close()
+            print("PostgreSQL connection is closed")
 app.run()
