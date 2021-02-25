@@ -13,8 +13,12 @@ connection = psycopg2.connect(user="joshuavedane",
                                 database="python_pets")
 
 # Get all Pets
-@app.route('/pets', methods=['GET'])
+@app.route('/dashboard', methods=['GET'])
 def get_pets():
+  connection = psycopg2.connect(user="joshuavedane",
+                                host="127.0.0.1",
+                                port="5432",
+                                database="python_pets")
   print('made it to get pets')
   cursor = connection.cursor(cursor_factory=RealDictCursor)
   query_text= "SELECT * FROM pets"
@@ -27,13 +31,17 @@ def get_pets():
   return jsonify(pets)
   
 ## Add a pet 
-@app.route('/pets', methods=['POST'])
+@app.route('/dashboard', methods=['POST'])
 def add_pet():
-  user_id = request.form['user_id']
+  user_id = request.form['owner']
   name = request.form['name']
   breed = request.form['breed']
   color = request.form['color']
   try: 
+    connection = psycopg2.connect(user="joshuavedane",
+                                host="127.0.0.1",
+                                port="5432",
+                                database="python_pets")
     # avoid array of arrays
     cursor = connection.cursor(cursor_factory=RealDictCursor)
     print(f'adding {name} color: {color} breed: {breed} with user {user_id}')
@@ -70,7 +78,7 @@ def tests():
 
 @app.route('/owners', methods=['GET'])
 def get_owners():
-    cursor = connection.cursor()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
     query_text = "SELECT owners.id, owners.name, COUNT(pets.name) FROM owners JOIN pets on owners.id = pets.user_id GROUP BY owners.id"
     # execute query
     cursor.execute(query_text)
