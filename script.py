@@ -21,7 +21,7 @@ def get_owners():
 
     cursor = connection.cursor(cursor_factory=RealDictCursor)
 
-    query_text = "SELECT owners.id, owners.name, COUNT(pets.name) FROM owners JOIN pets on owners.id = pets.user_id GROUP BY owners.id"
+    query_text = "SELECT owners.id, owners.name, COUNT(pets.name) FROM owners LEFT JOIN pets on owners.id = pets.user_id GROUP BY owners.id"
     # execute query
     cursor.execute(query_text)
     # Selecting rows from mobile table using cursor.fetchall
