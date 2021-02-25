@@ -6,11 +6,7 @@ from psycopg2.extras import RealDictCursor
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-# makes connection to postgresDB
-connection = psycopg2.connect(user="dave",
-                                host="127.0.0.1",
-                                port="5432",
-                                database="python_pets")
+
 
 
 @app.route('/', methods=['GET'])
@@ -20,7 +16,11 @@ def tests():
 
 @app.route('/owners', methods=['GET'])
 def get_owners():
+    # makes connection to postgresDB
+    connection = psycopg2.connect(user="dave", host="127.0.0.1", port="5432", database="python_pets")
+
     cursor = connection.cursor(cursor_factory=RealDictCursor)
+
     query_text = "SELECT owners.id, owners.name, COUNT(pets.name) FROM owners JOIN pets on owners.id = pets.user_id GROUP BY owners.id"
     # execute query
     cursor.execute(query_text)
@@ -36,6 +36,8 @@ def add_owner():
     print('in ownerPost')
     name = request.form['name']
     try:
+        # makes connection to postgresDB
+        connection = psycopg2.connect(user="dave", host="127.0.0.1", port="5432", database="python_pets")
         # Avoid getting arrays of arrays!
         cursor = connection.cursor(cursor_factory=RealDictCursor)
 
